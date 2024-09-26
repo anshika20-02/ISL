@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Language Translation Result</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #000;
+            color: #fff;
+            text-align: center;
+            margin-top: 50px;
+        }
+        #result img {
+            width: 200px; /* Set your desired width */
+            height: 250px; /* Maintain aspect ratio */
+            margin: 5px; /* Add some spacing between images */
+        }
+    </style>
+</head>
+<body>
+    <h1>Translation Result</h1>
+    <div id="result"></div>
+
+    <script>
+        // Function to get query parameters
+        function getQueryParams() {
+            const params = {};
+            window.location.search.substring(1).split("&").forEach(param => {
+                const [key, value] = param.split("=");
+                params[decodeURIComponent(key)] = decodeURIComponent(value);
+            });
+            return params;
+        }
+
+        // Get letters from URL parameters and display them
+        const params = getQueryParams();
+        if (params.letters) {
+            const letters = JSON.parse(params.letters);
+            let images = letters.map(letter => '<img src="' + letter + '" alt="Letter">').join('');
+            document.getElementById('result').innerHTML = images;
+        } else {
+            document.getElementById('result').innerText = 'No translation available.';
+        }
+    </script>
+</body>
+</html>

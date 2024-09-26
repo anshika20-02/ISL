@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Display Sign Language Image</title>
+    <link rel="stylesheet" href="static/styles.css"> <!-- Corrected link -->
+</head>
+<body>
+   
+    <div class="letter-container" id="letter-container">
+        <!-- Images will be dynamically inserted here -->
+    </div>
+    <button onclick="goBack()">Go Back</button>
+    
+    <script>
+        // Get the image paths from the URL parameters (assumes comma-separated values)
+        const params = new URLSearchParams(window.location.search);
+        const imagePaths = params.get('path');
+
+        if (imagePaths) {
+            const imagePathArray = imagePaths.split(','); // Split the image paths by comma
+
+            // Get the letter container
+            const letterContainer = document.getElementById('letter-container');
+
+            // Create and append image elements for each path
+            imagePathArray.forEach(path => {
+                const imgElement = document.createElement('img');
+                imgElement.src = path;
+                imgElement.alt = "Sign Language Image";
+                letterContainer.appendChild(imgElement);
+            });
+        }
+
+        // Function to go back to the previous page
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+</body>
+</html>

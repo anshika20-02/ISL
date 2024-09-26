@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Language Translator</title>
+    <style>
+        /* Basic reset */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+            text-align: center;
+            background-color: #000;
+            margin-top:150px;
+        }
+
+        /* Main container styles */
+        h1 {
+            margin: 20px 0;
+            color: #007BFF;
+        }
+
+        h3 {
+            color: #fff;
+        }
+
+        /* Input and button styles */
+        .button-container {
+            margin: 20px 0;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            font-size: 16px;
+            width: 300px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border-color: #007BFF;
+            outline: none;
+        }
+
+        button {
+            padding: 10px 15px;
+            font-size: 16px;
+            color: white;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Result area styles */
+        #result {
+            margin-top: 20px;
+        }
+
+        /* Adjusting image size */
+        #result img {
+            width: 200px; /* Set your desired width */
+            height: 250px; /* Maintain aspect ratio */
+            margin: 5px; /* Add some spacing between images */
+        }
+
+        /* Responsive styles */
+        @media (max-width: 600px) {
+            input[type="text"] {
+                width: 80%;
+            }
+
+            button {
+                width: 80%;
+                margin: 10px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Indian Sign Language Assistant</h1>
+
+    <!-- Add text input for manual entry -->
+    <h3>Enter the Text</h3>
+    <div>
+        <input type="text" id="text-input" placeholder="Type here..." />
+        <button id="submit-text">Submit Text</button>
+    </div>
+
+    <!-- Button container to arrange other buttons in a line -->
+    <div class="button-container">
+        <button id="start">Start Listening</button>
+        <button id="clear">Clear</button>
+        <button id="speak">Speak</button>
+    </div>
+
+    <div id="result"></div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // Trigger voice recognition on button click
+        $("#start").click(function() {
+            $.post('/recognize', function(response) {
+                handleResponse(response);
+            });
+        });
+
+        // Submit text input
+        $("#submit-text").click(function() {
+            const userInput = $("#text-input").val();
+            if (userInput) {
+                $.post('/recognize-text', { text: userInput }, function(response) {
+                    handleResponse(response);
+                });
+            } else {
+                alert("Please enter some text.");
+            }
+        });
+
+        // Clear button functionality
+        $("#clear").click(function() {
+            $("#result").html('');  // Clear the result area
+            $("#text-input").val('');  // Clear the text input field
+        });
+
+        // Speak the entered text
+        $("#speak").click(function() {
+            const text = $("#text-input").val();
+            if (text) {
+                const msg = new SpeechSynthesisUtterance(text);
+                window.speechSynthesis.speak(msg);
+            } else {
+                alert("Please enter some text to speak.");
+            }
+        });
+
+        // Handle response from the server
+        function handleResponse(response) {
+            if (response.type === 'gif') {
+                // Redirect to the display image page with the GIF
+                window.location.href = '/display?path=' + encodeURIComponent(response.path);
+            } else if (response.type === 'letters') {
+                let images = response.letters.map(letter => '<img src="' + letter + '" alt="Letter">').join('');
+                
+                $("#result").html(images);
+            } else if (response.error) {
+                alert("Error: " + response.error);
+            }
+        }
+    </script>
+</body>
+</html>
